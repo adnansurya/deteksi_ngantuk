@@ -8,6 +8,7 @@ EAR_THRESHOLD = 0.25
 EAR_CONSEC_FRAMES = 20
 
 # Function to calculate the eye aspect ratio (EAR)
+#Fungsi untuk menghitung EAR
 def eye_aspect_ratio(eye):
     A = dist.euclidean(eye[1], eye[5])
     B = dist.euclidean(eye[2], eye[4])
