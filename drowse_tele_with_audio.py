@@ -37,6 +37,9 @@ video_capture = cv2.VideoCapture(0)
 # Initialize frame counters and drowsiness flag
 frame_counter = 0
 drowsy = False
+lastDrowsy = drowsy
+
+song = AudioSegment.from_mp3("sound/among.mp3")
 
 while True:
     # Read frame from video stream
@@ -71,7 +74,7 @@ while True:
             frame_counter += 1
             if frame_counter >= EAR_CONSEC_FRAMES:
                 
-                song = AudioSegment.from_mp3("sound/among.mp3")
+               
                 play(song)
                 
                 drowsy = True
@@ -83,12 +86,15 @@ while True:
                 cv2.imwrite(image_name, frame)
 
                 # Send notification with image to Telegram
-                with open(image_name, "rb") as photo:
-                    bot.send_photo(CHAT_ID, photo)
+                if drowsy and not lastDrowsy:
+                    with open(image_name, "rb") as photo:
+                        bot.send_photo(CHAT_ID, photo)
 
         else:
             frame_counter = 0
             drowsy = False
+
+        lastDrowsy = drowsy
 
         # Display the calculated eye aspect ratio (EAR) on the frame
         cv2.putText(frame, "EAR: {:.2f}".format(ear), (300, 30),
