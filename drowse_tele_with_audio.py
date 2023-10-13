@@ -8,7 +8,7 @@ from pydub import AudioSegment
 from pydub.playback import play
 
 
-# Constants for eye aspect ratio (EAR) and drowsiness thresholds
+#Konstanta untuk rasio aspek mata (EAR) dan ambang kantuk
 EAR_THRESHOLD = 0.25
 EAR_CONSEC_FRAMES = 20
 
@@ -32,7 +32,7 @@ detector = dlib.get_frontal_face_detector()
 predictor = dlib.shape_predictor("shape_predictor_68_face_landmarks.dat")
 
 # Start capturing video
-video_capture = cv2.VideoCapture(0)
+video_capture = cv2.VideoCapture(1)
 
 # Initialize frame counters and drowsiness flag
 frame_counter = 0
