@@ -74,7 +74,7 @@ while True:
             frame_counter += 1
             if frame_counter >= EAR_CONSEC_FRAMES:
                 
-               
+                               
                 play(song)
                 
                 drowsy = True
@@ -86,9 +86,8 @@ while True:
                 cv2.imwrite(image_name, frame)
 
                 # Send notification with image to Telegram
-                if drowsy and not lastDrowsy:
-                    with open(image_name, "rb") as photo:
-                        bot.send_photo(CHAT_ID, photo)
+                with open(image_name, "rb") as photo:
+                    bot.send_photo(CHAT_ID, photo)
 
         else:
             frame_counter = 0
