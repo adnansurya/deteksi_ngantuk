@@ -58,6 +58,9 @@ while True:
         shape = predictor(gray, face)
         shape = face_utils.shape_to_np(shape)
 
+        for (x, y) in shape:
+            cv2.circle(frame, (x, y), 1, (0, 0, 255), -1)
+
         # Extract the coordinates of the left and right eye
         left_eye = shape[42:48]
         right_eye = shape[36:42]
@@ -74,7 +77,7 @@ while True:
             frame_counter += 1
             if frame_counter >= EAR_CONSEC_FRAMES:
                 
-                               
+               
                 play(song)
                 
                 drowsy = True
@@ -86,12 +89,15 @@ while True:
                 cv2.imwrite(image_name, frame)
 
                 # Send notification with image to Telegram
-                with open(image_name, "rb") as photo:
-                    bot.send_photo(CHAT_ID, photo)
+                if drowsy and not lastDrowsy:
+                    with open(image_name, "rb") as photo:
+                        bot.send_photo(CHAT_ID, photo)               
 
         else:
             frame_counter = 0
             drowsy = False
+
+           
 
         lastDrowsy = drowsy
 
