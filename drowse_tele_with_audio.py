@@ -9,17 +9,17 @@ from pydub.playback import play
 
 
 #Konstanta untuk rasio aspek mata (EAR) dan ambang kantuk
-EAR_THRESHOLD = 0.25
+EAR_THRESHOLD = 0.20
 EAR_CONSEC_FRAMES = 20
 
-# Telegram bot API token and chat ID
+# Token API bot Telegram dan ID obrolan
 TOKEN = auth.tele_token
 CHAT_ID = auth.tele_chat_id
 
-# Initialize Telegram bot
+# Inisialisasi bot Telegram
 bot = telebot.TeleBot(TOKEN)
 
-# Function to calculate the eye aspect ratio (EAR)
+# Berfungsi untuk menghitung rasio aspek mata (EAR)
 def eye_aspect_ratio(eye):
     A = dist.euclidean(eye[1], eye[5])
     B = dist.euclidean(eye[2], eye[4])
@@ -27,14 +27,14 @@ def eye_aspect_ratio(eye):
     ear = (A + B) / (2.0 * C)
     return ear
 
-# Load the face detector and landmark predictor from dlib
+# Muat detektor wajah dan prediktor landmark dari dlib
 detector = dlib.get_frontal_face_detector()
 predictor = dlib.shape_predictor("shape_predictor_68_face_landmarks.dat")
 
-# Start capturing video
+# Mulai merekam video
 video_capture = cv2.VideoCapture(1)
 
-# Initialize frame counters and drowsiness flag
+# Inisialisasi penghitung bingkai dan tanda kantuk
 frame_counter = 0
 drowsy = False
 lastDrowsy = drowsy
@@ -42,19 +42,19 @@ lastDrowsy = drowsy
 song = AudioSegment.from_mp3("sound/among.mp3")
 
 while True:
-    # Read frame from video stream
+    # Baca bingkai dari aliran video
     ret, frame = video_capture.read()
     if not ret:
         break
 
-    # Convert frame to grayscale
+    # Ubah bingkai menjadi skala abu-abu
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
-    # Detect faces in the grayscale frame
+    # Deteksi wajah dalam bingkai skala abu-abu
     faces = detector(gray, 0)
 
     for face in faces:
-        # Determine the facial landmarks for the face region
+        # Tentukan landmark wajah untuk daerah wajah
         shape = predictor(gray, face)
         shape = face_utils.shape_to_np(shape)
 
@@ -65,14 +65,14 @@ while True:
         left_eye = shape[42:48]
         right_eye = shape[36:42]
 
-        # Calculate the eye aspect ratio (EAR) for both eyes
+        # Hitung rasio aspek mata (EAR) untuk kedua mata
         left_ear = eye_aspect_ratio(left_eye)
         right_ear = eye_aspect_ratio(right_eye)
 
-        # Average the EAR for both eyes
+        # Rata-rata TELINGA untuk kedua mata
         ear = (left_ear + right_ear) / 2.0
 
-        # Check if the eye aspect ratio is below the drowsiness threshold
+        # Periksa apakah rasio aspek mata berada di bawah ambang kantuk
         if ear < EAR_THRESHOLD:
             frame_counter += 1
             if frame_counter >= EAR_CONSEC_FRAMES:
@@ -84,11 +84,11 @@ while True:
                 cv2.putText(frame, "Peringatan! Kantuk Terdeteksi", (10, 30),
                             cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
 
-                # Capture image and save it
+                # Ambil gambar dan simpan
                 image_name = "drowsiness_capture.jpg"
                 cv2.imwrite(image_name, frame)
 
-                # Send notification with image to Telegram
+                # Kirim pemberitahuan dengan gambar ke Telegram
                 if drowsy and not lastDrowsy:
                     with open(image_name, "rb") as photo:
                         bot.send_photo(CHAT_ID, photo)               
@@ -101,23 +101,23 @@ while True:
 
         lastDrowsy = drowsy
 
-        # Display the calculated eye aspect ratio (EAR) on the frame
+        # Menampilkan rasio aspek mata (EAR) yang dihitung pada bingkai
         cv2.putText(frame, "EAR: {:.2f}".format(ear), (300, 30),
                     cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
 
-        # Draw the eye region rectangles on the frame
+        # Gambarlah persegi panjang daerah mata pada bingka
         cv2.rectangle(frame, (face.left(), face.top()), (face.right(), face.bottom()), (0, 255, 0), 2)
         cv2.rectangle(frame, (face.left(), face.top() - 35), (face.right(), face.top()), (0, 255, 0), cv2.FILLED)
         cv2.putText(frame, "Face", (face.left() + 6, face.top() - 6),
                     cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255), 2)
 
-    # Display the resulting frame
+    # Tampilkan bingkai yang dihasilkan
     cv2.imshow("Drowsiness Detection", frame)
 
-    # Break the loop if 'q' is pressed
+    # Putuskan loop jika 'q' ditekan
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
 
-# Release the video capture object and close all windows
+# Lepaskan objek pengambilan video dan tutup semua jendela
 video_capture.release()
 cv2.destroyAllWindows()
