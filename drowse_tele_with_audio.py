@@ -9,7 +9,7 @@ from pydub.playback import play
 
 
 #Konstanta untuk rasio aspek mata (EAR) dan ambang kantuk
-EAR_THRESHOLD = 0.20
+EAR_THRESHOLD = 0.25
 EAR_CONSEC_FRAMES = 20
 
 # Token API bot Telegram dan ID obrolan
@@ -39,7 +39,7 @@ frame_counter = 0
 drowsy = False
 lastDrowsy = drowsy
 
-song = AudioSegment.from_mp3("sound/among.mp3")
+song = AudioSegment.from_mp3("sound/Awas.mp3")
 
 while True:
     # Baca bingkai dari aliran video
