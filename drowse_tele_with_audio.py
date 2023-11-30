@@ -32,7 +32,7 @@ detector = dlib.get_frontal_face_detector()
 predictor = dlib.shape_predictor("shape_predictor_68_face_landmarks.dat")
 
 # Mulai merekam video
-video_capture = cv2.VideoCapture(1)
+video_capture = cv2.VideoCapture(0)
 
 # Inisialisasi penghitung bingkai dan tanda kantuk
 frame_counter = 0
@@ -56,14 +56,16 @@ while True:
     for face in faces:
         # Tentukan landmark wajah untuk daerah wajah
         shape = predictor(gray, face)
-        shape = face_utils.shape_to_np(shape)
+        shape = face_utils.shape_to_np(shape) #data landmark wajah
+        print(len(shape))
+        print(shape)
 
         for (x, y) in shape:
             cv2.circle(frame, (x, y), 1, (0, 0, 255), -1)
 
         # Extract the coordinates of the left and right eye
-        left_eye = shape[42:48]
-        right_eye = shape[36:42]
+        left_eye = shape[42:48] #mengambil data landmark index 42-47 untuk mata kiri
+        right_eye = shape[36:42] #mengambil data landmark index 36-41 untuk mata kanan
 
         # Hitung rasio aspek mata (EAR) untuk kedua mata
         left_ear = eye_aspect_ratio(left_eye)
