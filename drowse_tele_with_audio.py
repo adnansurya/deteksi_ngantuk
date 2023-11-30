@@ -9,7 +9,7 @@ from pydub.playback import play
 
 
 #Konstanta untuk rasio aspek mata (EAR) dan ambang kantuk
-EAR_THRESHOLD = 0.25
+EAR_THRESHOLD = 0.20
 EAR_CONSEC_FRAMES = 20
 
 # Token API bot Telegram dan ID obrolan
@@ -91,7 +91,9 @@ while True:
                 # Kirim pemberitahuan dengan gambar ke Telegram
                 if drowsy and not lastDrowsy:
                     with open(image_name, "rb") as photo:
-                        bot.send_photo(CHAT_ID, photo)               
+                        bot.send_photo(CHAT_ID, photo)
+                        pesan = "EAR = " + str(round(ear,2)) + "\n\nKiri = " + str(round(left_ear,2)) + "\nKanan = " + str(round(right_ear,2)) 
+                        bot.send_message(CHAT_ID, pesan)
 
         else:
             frame_counter = 0
